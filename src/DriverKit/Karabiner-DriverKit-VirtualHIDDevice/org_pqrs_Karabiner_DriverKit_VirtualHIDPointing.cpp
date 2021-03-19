@@ -1,6 +1,6 @@
 #include "org_pqrs_Karabiner_DriverKit_VirtualHIDPointing.h"
 #include "IOBufferMemoryDescriptorUtility.hpp"
-#include "org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceUserClient.h"
+#include "org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot.h"
 #include "pqrs/karabiner/driverkit/virtual_hid_device_driver.hpp"
 #include "version.hpp"
 #include <HIDDriverKit/IOHIDDeviceKeys.h>
@@ -81,7 +81,7 @@ const uint8_t reportDescriptor[] = {
 }
 
 struct org_pqrs_Karabiner_DriverKit_VirtualHIDPointing_IVars {
-  org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceUserClient* provider;
+  org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot* provider;
   bool ready;
 };
 
@@ -113,9 +113,9 @@ void org_pqrs_Karabiner_DriverKit_VirtualHIDPointing::free() {
 bool org_pqrs_Karabiner_DriverKit_VirtualHIDPointing::handleStart(IOService* provider) {
   os_log(OS_LOG_DEFAULT, LOG_PREFIX " handleStart");
 
-  ivars->provider = OSDynamicCast(org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceUserClient, provider);
+  ivars->provider = OSDynamicCast(org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot, provider);
   if (!ivars->provider) {
-    os_log(OS_LOG_DEFAULT, LOG_PREFIX " provider is not org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceUserClient");
+    os_log(OS_LOG_DEFAULT, LOG_PREFIX " provider is not org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot");
     return false;
   }
 

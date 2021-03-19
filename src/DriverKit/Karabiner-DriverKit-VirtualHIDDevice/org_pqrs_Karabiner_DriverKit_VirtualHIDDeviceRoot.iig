@@ -21,6 +21,11 @@ public:
     virtual kern_return_t virtualHIDKeyboardPostReport(IOMemoryDescriptor* report);
     virtual kern_return_t virtualHIDKeyboardReset(void);
     virtual uint32_t virtualHIDKeyboardCountryCode(void);
+
+    virtual kern_return_t virtualHIDPointingInitialize(void);
+    virtual bool virtualHIDPointingReady();
+    virtual kern_return_t virtualHIDPointingPostReport(IOMemoryDescriptor* report);
+    virtual kern_return_t virtualHIDPointingReset(void);
 };
 
 #endif

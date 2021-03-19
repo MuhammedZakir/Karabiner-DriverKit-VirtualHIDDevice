@@ -93,6 +93,10 @@ kern_return_t IMPL(org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot, NewUserCli
   return kIOReturnSuccess;
 }
 
+//
+// VirtualHIDKeyboard
+//
+
 kern_return_t IMPL(org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot, virtualHIDKeyboardInitialize) {
   if (!ivars->keyboard) {
     ivars->keyboardCountryCode = keyboardCountryCode;
@@ -117,7 +121,8 @@ kern_return_t IMPL(org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot, virtualHID
 }
 
 bool IMPL(org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot, virtualHIDKeyboardReady) {
-  return (ivars->keyboard && ivars->keyboard->getReady());
+  return ivars->keyboard &&
+         ivars->keyboard->getReady();
 }
 
 kern_return_t IMPL(org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot, virtualHIDKeyboardPostReport) {
@@ -137,4 +142,48 @@ kern_return_t IMPL(org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot, virtualHID
 
 uint32_t IMPL(org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot, virtualHIDKeyboardCountryCode) {
   return ivars->keyboardCountryCode;
+}
+
+//
+// VirtualHIDPointing
+//
+
+kern_return_t IMPL(org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot, virtualHIDPointingInitialize) {
+  if (!ivars->pointing) {
+    IOService* client;
+
+    auto kr = Create(this, "VirtualHIDPointingProperties", &client);
+    if (kr != kIOReturnSuccess) {
+      os_log(OS_LOG_DEFAULT, LOG_PREFIX " IOService::Create failed: 0x%x", kr);
+      return kr;
+    }
+
+    ivars->pointing = OSDynamicCast(org_pqrs_Karabiner_DriverKit_VirtualHIDPointing, client);
+    if (!ivars->pointing) {
+      os_log(OS_LOG_DEFAULT, LOG_PREFIX " OSDynamicCast failed");
+      client->release();
+      return kIOReturnError;
+    }
+  }
+  return kIOReturnSuccess;
+}
+
+bool IMPL(org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot, virtualHIDPointingReady) {
+  return ivars->pointing &&
+         ivars->pointing->getReady();
+}
+
+kern_return_t IMPL(org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot, virtualHIDPointingPostReport) {
+  if (ivars->pointing) {
+    return ivars->pointing->postReport(report);
+  }
+
+  return kIOReturnError;
+}
+
+kern_return_t IMPL(org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot, virtualHIDPointingReset) {
+  if (ivars->pointing) {
+    return ivars->pointing->reset();
+  }
+  return kIOReturnError;
 }
