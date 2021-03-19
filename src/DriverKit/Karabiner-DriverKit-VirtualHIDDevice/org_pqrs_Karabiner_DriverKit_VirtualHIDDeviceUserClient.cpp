@@ -1,5 +1,6 @@
 #include "org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceUserClient.h"
 #include "IOBufferMemoryDescriptorUtility.hpp"
+#include "org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot.h"
 #include "org_pqrs_Karabiner_DriverKit_VirtualHIDKeyboard.h"
 #include "org_pqrs_Karabiner_DriverKit_VirtualHIDPointing.h"
 #include "pqrs/karabiner/driverkit/virtual_hid_device_driver.hpp"
@@ -33,6 +34,7 @@ kern_return_t createIOMemoryDescriptor(IOUserClientMethodArguments* arguments, I
 } // namespace
 
 struct org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceUserClient_IVars {
+  org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot* provider;
   uint32_t keyboardCountryCode;
   org_pqrs_Karabiner_DriverKit_VirtualHIDKeyboard* keyboard;
   org_pqrs_Karabiner_DriverKit_VirtualHIDPointing* pointing;
@@ -58,6 +60,7 @@ void org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceUserClient::free() {
 
   OSSafeReleaseNULL(ivars->keyboard);
   OSSafeReleaseNULL(ivars->pointing);
+  OSSafeReleaseNULL(ivars->provider);
 
   IOSafeDeleteNULL(ivars, org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceUserClient_IVars, 1);
 
@@ -67,9 +70,18 @@ void org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceUserClient::free() {
 kern_return_t IMPL(org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceUserClient, Start) {
   os_log(OS_LOG_DEFAULT, LOG_PREFIX " Start");
 
+  ivars->provider = OSDynamicCast(org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot, provider);
+  if (!ivars->provider) {
+    os_log(OS_LOG_DEFAULT, LOG_PREFIX " provider is not org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot");
+    return kIOReturnError;
+  }
+
+  ivars->provider->retain();
+
   {
     auto kr = Start(provider, SUPERDISPATCH);
     if (kr != kIOReturnSuccess) {
+      Stop(provider, SUPERDISPATCH);
       os_log(OS_LOG_DEFAULT, LOG_PREFIX " Start failed");
       return kr;
     }
