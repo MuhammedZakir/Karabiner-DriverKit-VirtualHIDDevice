@@ -15,6 +15,11 @@ public:
 
     virtual kern_return_t NewUserClient(uint32_t type,
                                         IOUserClient** userClient) override;
+
+    virtual kern_return_t virtualHIDKeyboardInitialize(uint32_t keyboardCountryCode);
+    virtual bool virtualHIDKeyboardReady();
+    virtual kern_return_t virtualHIDKeyboardPostReport(IOMemoryDescriptor* report);
+    virtual kern_return_t virtualHIDKeyboardReset(void);
 };
 
 #endif
