@@ -136,6 +136,8 @@ bool org_pqrs_Karabiner_DriverKit_VirtualHIDKeyboard::init() {
 void org_pqrs_Karabiner_DriverKit_VirtualHIDKeyboard::free() {
   os_log(OS_LOG_DEFAULT, LOG_PREFIX " free");
 
+  OSSafeReleaseNULL(ivars->provider);
+
   IOSafeDeleteNULL(ivars, org_pqrs_Karabiner_DriverKit_VirtualHIDKeyboard_IVars, 1);
 
   super::free();
@@ -149,6 +151,8 @@ bool org_pqrs_Karabiner_DriverKit_VirtualHIDKeyboard::handleStart(IOService* pro
     os_log(OS_LOG_DEFAULT, LOG_PREFIX " provider is not org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceUserClient");
     return false;
   }
+
+  ivars->provider->retain();
 
   if (!super::handleStart(provider)) {
     os_log(OS_LOG_DEFAULT, LOG_PREFIX " super::handleStart failed");
