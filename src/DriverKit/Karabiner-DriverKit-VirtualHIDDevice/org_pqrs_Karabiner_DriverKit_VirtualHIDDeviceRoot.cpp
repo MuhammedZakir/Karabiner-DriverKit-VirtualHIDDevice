@@ -134,3 +134,7 @@ kern_return_t IMPL(org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot, virtualHID
   }
   return kIOReturnError;
 }
+
+uint32_t IMPL(org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot, virtualHIDKeyboardCountryCode) {
+  return ivars->keyboardCountryCode;
+}

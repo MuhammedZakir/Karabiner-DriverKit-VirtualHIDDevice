@@ -1,6 +1,6 @@
 #include "org_pqrs_Karabiner_DriverKit_VirtualHIDKeyboard.h"
 #include "IOBufferMemoryDescriptorUtility.hpp"
-#include "org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceUserClient.h"
+#include "org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot.h"
 #include "pqrs/karabiner/driverkit/virtual_hid_device_driver.hpp"
 #include "version.hpp"
 #include <HIDDriverKit/IOHIDDeviceKeys.h>
@@ -113,7 +113,7 @@ const uint8_t reportDescriptor[] = {
 }
 
 struct org_pqrs_Karabiner_DriverKit_VirtualHIDKeyboard_IVars {
-  org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceUserClient* provider;
+  org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot* provider;
   bool ready;
   uint8_t lastLedState;
 };
@@ -146,9 +146,9 @@ void org_pqrs_Karabiner_DriverKit_VirtualHIDKeyboard::free() {
 bool org_pqrs_Karabiner_DriverKit_VirtualHIDKeyboard::handleStart(IOService* provider) {
   os_log(OS_LOG_DEFAULT, LOG_PREFIX " handleStart");
 
-  ivars->provider = OSDynamicCast(org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceUserClient, provider);
+  ivars->provider = OSDynamicCast(org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot, provider);
   if (!ivars->provider) {
-    os_log(OS_LOG_DEFAULT, LOG_PREFIX " provider is not org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceUserClient");
+    os_log(OS_LOG_DEFAULT, LOG_PREFIX " provider is not org_pqrs_Karabiner_DriverKit_VirtualHIDDeviceRoot");
     return false;
   }
 
@@ -218,7 +218,7 @@ OSDictionary* org_pqrs_Karabiner_DriverKit_VirtualHIDKeyboard::newDeviceDescript
 
   uint32_t keyboardCountryCode = 0;
   if (ivars->provider) {
-    keyboardCountryCode = ivars->provider->getKeyboardCountryCode();
+    keyboardCountryCode = ivars->provider->virtualHIDKeyboardCountryCode();
   }
   if (auto countryCode = OSNumber::withNumber(keyboardCountryCode, 32)) {
     OSDictionarySetValue(dictionary, kIOHIDCountryCodeKey, countryCode);
