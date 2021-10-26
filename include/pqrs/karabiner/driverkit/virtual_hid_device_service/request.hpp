@@ -26,6 +26,7 @@ enum class request : uint8_t {
   post_consumer_input_report,
   post_apple_vendor_keyboard_input_report,
   post_apple_vendor_top_case_input_report,
+  post_do_not_disturb_input_report,
   post_pointing_input_report,
 };
 } // namespace virtual_hid_device_service

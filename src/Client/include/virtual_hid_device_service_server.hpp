@@ -262,6 +262,13 @@ private:
                 size);
             break;
 
+          case pqrs::karabiner::driverkit::virtual_hid_device_service::request::post_do_not_disturb_input_report:
+            virtual_hid_device_service_pointing_clients_manager_->post_report<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::do_not_disturb_input>(
+                sender_endpoint->path(),
+                p,
+                size);
+            break;
+
           case pqrs::karabiner::driverkit::virtual_hid_device_service::request::post_pointing_input_report:
             virtual_hid_device_service_pointing_clients_manager_->post_report<pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::pointing_input>(
                 sender_endpoint->path(),
