@@ -178,6 +178,16 @@ int main(void) {
             std::lock_guard<std::mutex> lock(client_mutex);
 
             if (client2) {
+              {
+                pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::do_not_disturb_input report;
+                report.do_not_disturb = 0xff;
+                client2->async_post_report(report);
+              }
+              {
+                pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::do_not_disturb_input report;
+                client2->async_post_report(report);
+              }
+
               // key down (g)
               {
                 pqrs::karabiner::driverkit::virtual_hid_device_driver::hid_report::keyboard_input report;
