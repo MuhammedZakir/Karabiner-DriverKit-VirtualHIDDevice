@@ -6,6 +6,7 @@
 
 #include "modifier.hpp"
 #include <cstdint>
+#include <cstring> // size_t, memset, memcmp
 
 namespace pqrs {
 namespace karabiner {
